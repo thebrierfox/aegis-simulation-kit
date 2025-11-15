@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "project": "Aegis Simulation Kit - Public Launch",
+    "priority": "P1",
+    "owner": "~K1",
+    "timebox": "45m",
+    "created_ct": "2025-11-15 10:00 CT"
+  },
+  "objectives": [
+    "Publish repo to GitHub",
+    "Validate and run example simulation",
+    "Enable Agent use via handoff JSON"
+  ],
+  "constraints": {
+    "budget": "minimal",
+    "secrets": "none",
+    "licensing": "MIT"
+  },
+  "inputs": {
+    "brief": "Public, open, known-good kit for agent-run simulations",
+    "assets": [
+      "20251115_K1_AegisSimulationKit_v1.zip"
+    ],
+    "assumptions": [
+      "GitHub account available"
+    ]
+  },
+  "steps": [
+    {
+      "id": "1",
+      "desc": "Create GitHub repo and push contents",
+      "why": "gives agent a stable source of truth",
+      "done_when": "main branch with README is public"
+    },
+    {
+      "id": "2",
+      "desc": "Replace <REPO_URL> in meta/AgentHandoff.json",
+      "why": "enables browser plus terminal automation",
+      "done_when": "json committed to main"
+    },
+    {
+      "id": "3",
+      "desc": "Run validate and simulate locally to confirm",
+      "why": "execution-truth before agent handoff",
+      "done_when": "hello_world_report.md exists"
+    },
+    {
+      "id": "4",
+      "desc": "Provide AgentHandoff.json to ChatGPT Agent",
+      "why": "enables automated clone, install, run, report",
+      "done_when": "agent returns report sections"
+    }
+  ],
+  "deliverables": [
+    {
+      "name": "Public repo URL",
+      "type": "link",
+      "criteria": "reachable without auth"
+    },
+    {
+      "name": "Hello world report",
+      "type": "markdown",
+      "criteria": "contains SUMMARY, WHAT I DID, ARTEFACTS, BLOCKERS, NEXT"
+    }
+  ],
+  "reporting": {
+    "ticks": "on completion",
+    "final_fmt": "markdown"
+  },
+  "guardrails": {
+    "ask_if": "repo cannot be cloned or pip install fails",
+    "abort_if": "schema validation fails repeatedly"
+  }
+}

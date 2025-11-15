@@ -1,0 +1,8 @@
+{
+  "id": "hello_world",
+  "description": "A simple scenario to demonstrate simulation and reporting capabilities.",
+  "steps": [
+    {"id": "1", "desc": "Print Hello", "type": "internal"},
+    {"id": "2", "desc": "Wait for completion", "type": "internal"}
+  ]
+}

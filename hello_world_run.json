@@ -1,0 +1,7 @@
+{
+  "scenario_id": "hello_world",
+  "actions": [
+    {"step_id": "1", "status": "done", "note": "Hello printed"},
+    {"step_id": "2", "status": "done", "note": "Waited"}
+  ]
+}

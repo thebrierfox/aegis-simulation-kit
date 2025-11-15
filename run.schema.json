@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Run",
+  "type": "object",
+  "properties": {
+    "scenario_id": {"type": "string"},
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": {"type": "string"},
+          "status": {"type": "string"},
+          "note": {"type": "string"}
+        },
+        "required": ["step_id", "status"]
+      }
+    }
+  },
+  "required": ["scenario_id", "actions"]
+}
