@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "id": "Aegis_SmokeTest_Combined_v1",
+    "owner": "~K1",
+    "created": "2025-11-15",
+    "purpose": "Define both local and Agent-based smoke tests for the Aegis Simulation Kit."
+  },
+  "tracks": {
+    "local": {
+      "id": "Aegis_Local_SmokeTest_v1",
+      "objectives": [
+        "Clone the repo locally",
+        "Validate hello_world scenario and run files",
+        "Run the hello_world simulation",
+        "Inspect hello_world_report.md for required sections"
+      ],
+      "steps": [
+        {
+          "id": "L1",
+          "desc": "Clone the repository and cd into it",
+          "commands": [
+            "git clone https://github.com/thebrierfox/aegis-simulation-kit.git",
+            "cd aegis-simulation-kit"
+          ]
+        },
+        {
+          "id": "L2",
+          "desc": "Optional virtualenv",
+          "commands_unix": [
+            "python -m venv .venv",
+            "source .venv/bin/activate"
+          ],
+          "commands_windows": [
+            "python -m venv .venv",
+            ".\\.venv\\Scripts\\Activate.ps1"
+          ],
+          "optional": true
+        },
+        {
+          "id": "L3",
+          "desc": "Validate scenario and run",
+          "commands": [
+            "python scripts/validate.py --file examples/scenarios/hello_world_scenario.json",
+            "python scripts/validate.py --file examples/runs/hello_world_run.json"
+          ]
+        },
+        {
+          "id": "L4",
+          "desc": "Run the simulation and generate report",
+          "commands": [
+            "python scripts/simulation_run.py --scenario examples/scenarios/hello_world_scenario.json --run examples/runs/hello_world_run.json --out examples/reports/hello_world_report.md"
+          ]
+        },
+        {
+          "id": "L5",
+          "desc": "Inspect report for sections",
+          "requirements": [
+            "SUMMARY",
+            "WHAT I DID",
+            "ARTEFACTS",
+            "BLOCKERS",
+            "NEXT"
+          ]
+        }
+      ],
+      "success_criteria": {
+        "validate": "Both JSON files validate successfully",
+        "simulate": "Simulation completes without traceback",
+        "report": "Report contains all required sections"
+      }
+    },
+    "agent": {
+      "id": "Aegis_Agent_SmokeTest_v1",
+      "objectives": [
+        "Agent clones the repo in its workspace",
+        "Agent validates hello_world JSON files",
+        "Agent runs the simulation",
+        "Agent reads and returns the report",
+        "Agent gives a structured PASS/FAIL summary"
+      ],
+      "reference_file": "meta/Aegis_Agent_SmokeTest_v1.json"
+    }
+  }
+}
