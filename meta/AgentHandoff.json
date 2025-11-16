@@ -1,74 +1,70 @@
 {
   "meta": {
-    "project": "Aegis Simulation Kit - Public Launch",
-    "priority": "P1",
+    "project": "Aegis Simulation Kit - Agent Smoke Test",
+    "version": "1.1.0",
     "owner": "~K1",
-    "timebox": "45m",
     "created_ct": "2025-11-15 10:00 CT"
   },
-  "objectives": [
-    "Publish repo to GitHub",
-    "Validate and run example simulation",
-    "Enable Agent use via handoff JSON"
-  ],
-  "constraints": {
-    "budget": "minimal",
-    "secrets": "none",
-    "licensing": "MIT"
-  },
   "inputs": {
-    "brief": "Public, open, known-good kit for agent-run simulations",
-    "assets": [
-      "20251115_K1_AegisSimulationKit_v1.zip"
-    ],
-    "assumptions": [
-      "GitHub account available"
-    ]
+    "repo_url": "https://github.com/thebrierfox/aegis-simulation-kit.git",
+    "scenario_path": "examples/scenarios/hello_world_scenario.json",
+    "run_path": "examples/runs/hello_world_run.json",
+    "out_path": "examples/reports/hello_world_report.md",
+    "agent_directive_path": "meta/Aegis_Agent_SmokeTest_v1.json"
   },
+  "objectives": [
+    "Clone the Aegis Simulation Kit repo into the Agent workspace",
+    "Validate hello_world scenario and run JSON files",
+    "Run the hello_world simulation",
+    "Generate hello_world_report.md",
+    "Return the report content and a PASS/FAIL summary"
+  ],
   "steps": [
     {
-      "id": "1",
-      "desc": "Create GitHub repo and push contents",
-      "why": "gives agent a stable source of truth",
-      "done_when": "main branch with README is public"
+      "id": "clone",
+      "desc": "Use terminal to clone the repo",
+      "done_when": "Folder 'aegis-simulation-kit' exists and pwd is inside it"
     },
     {
-      "id": "2",
-      "desc": "Replace <REPO_URL> in meta/AgentHandoff.json",
-      "why": "enables browser plus terminal automation",
-      "done_when": "json committed to main"
+      "id": "validate",
+      "desc": "Validate hello_world scenario and run JSON files",
+      "done_when": "Validator returns success for both files"
     },
     {
-      "id": "3",
-      "desc": "Run validate and simulate locally to confirm",
-      "why": "execution-truth before agent handoff",
-      "done_when": "hello_world_report.md exists"
+      "id": "simulate",
+      "desc": "Run the hello_world simulation to generate the report",
+      "done_when": "examples/reports/hello_world_report.md exists with no Python traceback"
     },
     {
-      "id": "4",
-      "desc": "Provide AgentHandoff.json to ChatGPT Agent",
-      "why": "enables automated clone, install, run, report",
-      "done_when": "agent returns report sections"
+      "id": "inspect",
+      "desc": "Read the report and confirm required sections",
+      "done_when": "Report contains SUMMARY, WHAT I DID, ARTEFACTS, BLOCKERS, NEXT"
+    },
+    {
+      "id": "report",
+      "desc": "Return report content and structured PASS/FAIL summary to the user",
+      "done_when": "User receives both the report text and a concise status block"
     }
   ],
   "deliverables": [
     {
-      "name": "Public repo URL",
-      "type": "link",
-      "criteria": "reachable without auth"
-    },
-    {
-      "name": "Hello world report",
+      "name": "hello_world_report",
       "type": "markdown",
-      "criteria": "contains SUMMARY, WHAT I DID, ARTEFACTS, BLOCKERS, NEXT"
+      "path": "examples/reports/hello_world_report.md",
+      "criteria": "Contains SUMMARY, WHAT I DID, ARTEFACTS, BLOCKERS, NEXT"
     }
   ],
   "reporting": {
-    "ticks": "on completion",
-    "final_fmt": "markdown"
+    "format": [
+      "SUMMARY",
+      "WHAT I DID",
+      "ARTEFACTS",
+      "BLOCKERS",
+      "NEXT"
+    ]
   },
   "guardrails": {
-    "ask_if": "repo cannot be cloned or pip install fails",
-    "abort_if": "schema validation fails repeatedly"
+    "ask_if": "repo_url is unreachable or python scripts fail repeatedly",
+    "abort_if": "validator or simulation scripts cannot be run successfully after retries"
   }
 }
