@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "id": "ADP_Aegis_Agent_Bringup_v1",
+    "priority": "P1",
+    "timebox": "45m",
+    "owner": "~K1"
+  },
+  "objectives": [
+    "Confirm the Aegis Simulation Kit repo is correctly structured and up to date",
+    "Ensure Agent Handoff JSON is aligned with the real repo URL and hello_world smoke test",
+    "Configure the Agent to run the Aegis_Agent_SmokeTest_v1 flow"
+  ],
+  "constraints": [
+    "No production data touched",
+    "Agent operates only in test workspace",
+    "No external payments or irreversible actions"
+  ],
+  "inputs": {
+    "brief": "Agent should be able to autonomously clone, validate, simulate, and report on the Aegis Simulation Kit hello_world scenario.",
+    "assets": [
+      "meta/AgentHandoff.json",
+      "meta/Aegis_Agent_SmokeTest_v1.json",
+      "meta/Aegis_SmokeTest_Combined_v1.json"
+    ],
+    "assumptions": [
+      "GitHub repo at https://github.com/thebrierfox/aegis-simulation-kit.git is reachable",
+      "Agent has browser + terminal tools enabled"
+    ]
+  },
+  "steps": [
+    {
+      "id": "1",
+      "desc": "Update AgentHandoff.json in the repo to the latest version",
+      "why": "Ensures Agent has a single source of truth for how to run the smoke test",
+      "done_when": "meta/AgentHandoff.json in main matches the JSON in this card"
+    },
+    {
+      "id": "2",
+      "desc": "Upload Aegis_Agent_SmokeTest_v1.json into the Agent environment, or paste it into the Agent configuration",
+      "why": "Gives the Agent a precise behavioral contract for the smoke test",
+      "done_when": "Agent configuration references Aegis_Agent_SmokeTest_v1 as its directive"
+    },
+    {
+      "id": "3",
+      "desc": "Run a full Agent hello_world smoke test",
+      "why": "Proves the Agent can mirror the local test end to end",
+      "done_when": "Agent returns hello_world_report.md content plus explicit PASS/FAIL on clone, validate, simulate, report-format"
+    }
+  ],
+  "deliverables": [
+    {
+      "name": "Agent smoke-test run",
+      "type": "markdown",
+      "criteria": "Includes SUMMARY, WHAT I DID, ARTEFACTS, BLOCKERS, NEXT plus Agent PASS/FAIL status"
+    }
+  ],
+  "reporting": {
+    "ticks": "on completion",
+    "final_fmt": "markdown"
+  },
+  "guardrails": {
+    "ask_if": "Agent requests access to non-test repos or secrets",
+    "abort_if": "Agent cannot clone or run scripts after reasonable retries"
+  }
+}
