@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "id": "Aegis_Agent_SmokeTest_v1",
+    "purpose": "Verify that a ChatGPT-style Agent can autonomously run the Aegis Simulation Kit hello_world smoke test using browser + terminal tools.",
+    "owner": "~K1",
+    "created": "2025-11-15"
+  },
+
+  "assumptions": [
+    "Agent has access to browser and terminal tools in its workspace",
+    "Agent can run shell commands (git, python) inside its workspace",
+    "Repo URL is: https://github.com/thebrierfox/aegis-simulation-kit.git",
+    "Local smoke-test (Aegis_Local_SmokeTest_v1) has already passed on at least one machine"
+  ],
+
+  "constraints": {
+    "environment": "Agent workspace (ephemeral)",
+    "external_dependencies": "minimal; standard git + Python 3.9+ only",
+    "allowed_errors": "none; any traceback or failed command must be treated as failure",
+    "max_runtime_minutes": 10
+  },
+
+  "objectives": [
+    "Agent clones the Aegis Simulation Kit repo into its workspace",
+    "Agent validates the hello_world scenario and run JSON files",
+    "Agent runs the hello_world simulation via simulation_run.py",
+    "Agent generates hello_world_report.md in the expected location",
+    "Agent inspects the report and confirms required sections are present",
+    "Agent returns the report content and a concise PASS/FAIL summary"
+  ],
+
+  "steps": [
+    {
+      "id": "1",
+      "desc": "Initialize workspace and clone the repository",
+      "agent_actions": [
+        "Use terminal to run: git clone https://github.com/thebrierfox/aegis-simulation-kit.git",
+        "Change directory into the cloned repo: cd aegis-simulation-kit"
+      ],
+      "done_when": "Repository folder 'aegis-simulation-kit' exists in the Agent workspace and pwd confirms the Agent is inside it"
+    },
+
+    {
+      "id": "2",
+      "desc": "Check validator CLI usage",
+      "agent_actions": [
+        "Run: python scripts/validate.py --help",
+        "Parse the help output to confirm that '--file' is the required argument"
+      ],
+      "done_when": "Help text is printed and includes '--file FILE' usage with no errors"
+    },
+
+    {
+      "id": "3",
+      "desc": "Validate the hello_world scenario and run JSON files",
+      "agent_actions": [
+        "Run: python scripts/validate.py --file examples/scenarios/hello_world_scenario.json",
+        "Run: python scripts/validate.py --file examples/runs/hello_world_run.json"
+      ],
+      "done_when": "Both commands complete without traceback and output confirms 'Scenario file is valid' and 'Run file is valid' or equivalent messages"
+    },
+
+    {
+      "id": "4",
+      "desc": "Check simulation_run.py CLI usage",
+      "agent_actions": [
+        "Run: python scripts/simulation_run.py --help",
+        "Confirm that required flags are '--scenario', '--run', and '--out'"
+      ],
+      "done_when": "Help text is printed with the three required flags and no errors"
+    },
+
+    {
+      "id": "5",
+      "desc": "Execute hello_world simulation and generate report",
+      "agent_actions": [
+        "Run: python scripts/simulation_run.py --scenario examples/scenarios/hello_world_scenario.json --run examples/runs/hello_world_run.json --out examples/reports/hello_world_report.md"
+      ],
+      "done_when": "Command completes with no traceback and the file 'examples/reports/hello_world_report.md' exists in the workspace"
+    },
+
+    {
+      "id": "6",
+      "desc": "Inspect the generated report for required sections",
+      "agent_actions": [
+        "Open and read examples/reports/hello_world_report.md",
+        "Check for the presence of the following headings (case-sensitive): 'SUMMARY', 'WHAT I DID', 'ARTEFACTS', 'BLOCKERS', 'NEXT'",
+        "Extract the entire report content to include in the final response"
+      ],
+      "done_when": "All five section headings are detected and the content is successfully read"
+    },
+
+    {
+      "id": "7",
+      "desc": "Return a structured PASS/FAIL summary to the user",
+      "agent_actions": [
+        "Summarize the results of steps 1–6 in a short status block",
+        "Explicitly state PASS or FAIL for: clone, validate, simulate, report-format",
+        "If PASS, include the full report content inline",
+        "If FAIL, include the exact command and error text for the failing step"
+      ],
+      "done_when": "User receives a clear summary plus report content or detailed error diagnostics"
+    }
+  ],
+
+  "success_criteria": {
+    "clone": "Repository cloned with no git errors and Agent is inside repo directory",
+    "validate": "Both hello_world_scenario.json and hello_world_run.json validate successfully",
+    "simulate": "simulation_run.py completes with no Python traceback",
+    "report": "examples/reports/hello_world_report.md exists and contains the five required sections",
+    "overall": "Agent reports overall status as PASS and returns the report content"
+  },
+
+  "failure_handling": {
+    "on_error": "Stop the remaining steps and treat the run as FAIL",
+    "capture": [
+      "failed step id",
+      "exact command executed",
+      "full stderr/stdout output",
+      "any traceback text"
+    ],
+    "report_back": "Return a concise failure summary plus the captured details so the user can debug or adjust the directive"
+  }
+}
